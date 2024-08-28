@@ -8,6 +8,7 @@ public class VocabularyBotApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(VocabularyBotApplication.class, args);
+        System.out.println(">>>>>>>>>>>>>>   start");
     }
 
 }
