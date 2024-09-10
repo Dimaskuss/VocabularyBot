@@ -48,10 +48,11 @@ public class VocabularyBot {
         UserSession session = vocabularyService.getUserSession(chatId);
 
 
+
         if (vocabularyService.getDictionaries().containsKey(data)) {
             vocabularyService.selectDictionary(data, chatId);
             sendMessage(chatId, "Вы выбрали словарь: " + data + ". Теперь вы можете начать тестирование с помощью /test.");
-            session.clear();
+            session.clearSessionFields();
         } else {
 
             String currentWord = session.getCurrentWord();
@@ -66,7 +67,9 @@ public class VocabularyBot {
             } else {
                 String correctAnswer = session.getCurrentVocabulary().get(currentWord);
                 sendMessage(chatId, "Неверно! Правильный ответ: *" + correctAnswer + "*");
+                session.getWrongAnswer().put(currentWord,correctAnswer);
             }
+
 
             vocabularyService.markWordAsChecked(chatId, currentWord);
             commandHandler.handleCommand(chatId, "/test");
@@ -79,6 +82,10 @@ public class VocabularyBot {
 
     public void sendMessageWithOptions(long chatId, String text, List<String> options) {
         InlineKeyboardMarkup markup = createInlineKeyboardMarkup(options);
+        bot.execute(new SendMessage(chatId, text).replyMarkup(markup).parseMode(ParseMode.Markdown));
+    }
+    public void sendMessageWithVerticalOptions(long chatId, String text, List<String> options) {
+        InlineKeyboardMarkup markup = createVerticalInlineKeyboardMarkup(options);
         bot.execute(new SendMessage(chatId, text).replyMarkup(markup).parseMode(ParseMode.Markdown));
     }
 
@@ -94,6 +101,22 @@ public class VocabularyBot {
         if (buttons.length == 0) {
             throw new IllegalStateException("No valid options provided to create buttons");
         }
+        return new InlineKeyboardMarkup(buttons);
+    }
+    private InlineKeyboardMarkup createVerticalInlineKeyboardMarkup(List<String> options) {
+        if (options == null || options.isEmpty()) {
+            throw new IllegalArgumentException("Options list cannot be null or empty");
+        }
+
+        InlineKeyboardButton[][] buttons = options.stream()
+                .filter(option -> option != null && !option.trim().isEmpty())
+                .map(option -> new InlineKeyboardButton[]{new InlineKeyboardButton(option).callbackData(option)})
+                .toArray(InlineKeyboardButton[][]::new);
+
+        if (buttons.length == 0) {
+            throw new IllegalStateException("No valid options provided to create buttons");
+        }
+
         return new InlineKeyboardMarkup(buttons);
     }
 }

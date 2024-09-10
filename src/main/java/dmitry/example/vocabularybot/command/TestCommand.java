@@ -32,12 +32,13 @@ public class TestCommand implements Command {
         String word = vocabularyService.getNextWordToCheck(chatId);
 
         if (word != null) {
-            session.setCurrentWord(word);  // Устанавливаем текущее слово в сессии пользователя
+            session.setCurrentWord(word);
             List<String> options = vocabularyService.generateOptions(chatId,word);
             vocabularyBot.sendMessageWithOptions(chatId, "*->  " + word.toUpperCase() + "  <-*", options);
         } else {
+            vocabularyBot.sendMessage(chatId,"*"+session.getWrongAnswer().toString()+"*");
             vocabularyBot.sendMessage(chatId, "_Вы проверили все слова в текущем словаре! Воспользуйтесь /select для сброса результатов или выберите другой словарь._");
-            session.clear();  // Очищаем сессию после завершения теста
+            session.clearSessionFields();
         }
     }
 }

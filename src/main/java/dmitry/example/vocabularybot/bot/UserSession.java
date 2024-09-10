@@ -1,14 +1,23 @@
 package dmitry.example.vocabularybot.bot;
 
+import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Component
 public class UserSession {
     private final Set<String> checkedWords = new HashSet<>();
     private String currentWord;
     private int counter;
     private Map<String, String> currentVocabulary;
+    private final Map<String, String> wrongAnswer = new HashMap<>();
+
+    public Map<String, String> getWrongAnswer() {
+        return wrongAnswer;
+    }
 
     public Map<String, String> getCurrentVocabulary() {
         return currentVocabulary;
@@ -38,9 +47,10 @@ public class UserSession {
         this.counter++;
     }
 
-    public void clear() {
+    public void clearSessionFields() {
         checkedWords.clear();
         counter = 0;
         currentWord = null;
+        wrongAnswer.clear();
     }
 }

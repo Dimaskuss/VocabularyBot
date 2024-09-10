@@ -20,6 +20,6 @@ public class SelectCommand implements Command {
     @Override
     public void execute(long chatId, String text) {
         List<String> dictionaryNames = new ArrayList<>(vocabularyService.getDictionaries().keySet());
-        vocabularyBot.sendMessageWithOptions(chatId, "Выберите словарь:", dictionaryNames);
+        vocabularyBot.sendMessageWithVerticalOptions(chatId, "Выберите словарь:", dictionaryNames);
     }
 }
