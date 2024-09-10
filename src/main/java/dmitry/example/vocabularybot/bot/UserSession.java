@@ -13,10 +13,11 @@ public class UserSession {
     private String currentWord;
     private int counter;
     private Map<String, String> currentVocabulary;
-    private final Map<String, String> wrongAnswer = new HashMap<>();
+    private final Map<String, String> wrongAnswers = new HashMap<>();
 
-    public Map<String, String> getWrongAnswer() {
-        return wrongAnswer;
+
+    public Map<String, String> getWrongAnswers() {
+        return wrongAnswers;
     }
 
     public Map<String, String> getCurrentVocabulary() {
@@ -26,6 +27,7 @@ public class UserSession {
     public void setCurrentVocabulary(Map<String, String> currentVocabulary) {
         this.currentVocabulary = currentVocabulary;
     }
+
 
     public Set<String> getCheckedWords() {
         return checkedWords;
@@ -51,6 +53,6 @@ public class UserSession {
         checkedWords.clear();
         counter = 0;
         currentWord = null;
-        wrongAnswer.clear();
+        wrongAnswers.clear();
     }
 }

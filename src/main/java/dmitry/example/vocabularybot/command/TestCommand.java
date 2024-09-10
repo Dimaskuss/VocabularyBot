@@ -36,7 +36,7 @@ public class TestCommand implements Command {
             List<String> options = vocabularyService.generateOptions(chatId,word);
             vocabularyBot.sendMessageWithOptions(chatId, "*->  " + word.toUpperCase() + "  <-*", options);
         } else {
-            vocabularyBot.sendMessage(chatId,"*"+session.getWrongAnswer().toString()+"*");
+            vocabularyBot.sendMessage(chatId,"*"+session.getWrongAnswers().toString().substring(1,session.getWrongAnswers().toString().length()-1)+"*");
             vocabularyBot.sendMessage(chatId, "_Вы проверили все слова в текущем словаре! Воспользуйтесь /select для сброса результатов или выберите другой словарь._");
             session.clearSessionFields();
         }

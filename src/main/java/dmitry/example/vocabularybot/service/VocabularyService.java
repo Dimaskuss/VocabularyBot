@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 @Data
@@ -13,7 +14,6 @@ public class VocabularyService {
 
     private final Map<String, Map<String, String>> dictionaries = new HashMap<>();
     private final Map<Long, UserSession> userSessions = new ConcurrentHashMap<>();
-
 
 
     public VocabularyService() {
@@ -383,7 +383,6 @@ public class VocabularyService {
                 Map.entry("preliminary", "предварительный"),
                 Map.entry("premier", "первоклассный"),
                 Map.entry("primary", "основной"),
-                Map.entry("proactive", "проактивный"),
                 Map.entry("productive", "продуктивный"),
                 Map.entry("proficient", "умелый"),
                 Map.entry("progressive", "прогрессивный"),
@@ -492,7 +491,7 @@ public class VocabularyService {
                 Map.entry("dynamic", "динамический")
         ));
         dictionaries.put("E-M IT words", Map.ofEntries(
-                Map.entry("efficient", "эффективный"),  // Новое слово
+                Map.entry("efficient", "эффективный"),
                 Map.entry("emulation", "эмуляция"),
                 Map.entry("environment", "среда"),
                 Map.entry("equality", "равенство"),
@@ -500,7 +499,6 @@ public class VocabularyService {
                 Map.entry("extension", "расширение"),
                 Map.entry("fallback", "резервный"),
                 Map.entry("field", "поле"),
-                Map.entry("flag", "флаг"),
                 Map.entry("floating", "плавающий"),
                 Map.entry("flush", "сброс"),
                 Map.entry("fragment", "фрагмент"),
@@ -521,17 +519,15 @@ public class VocabularyService {
                 Map.entry("interceptor", "перехватчик"),
                 Map.entry("invocation", "вызов"),
                 Map.entry("iteration", "итерация"),
-                Map.entry("javadoc", "документация Java"),
                 Map.entry("keyword", "ключевое слово"),
                 Map.entry("layout", "макет"),
                 Map.entry("leak", "утечка"),
-                Map.entry("lifecycle", "жизненный цикл"),
-                Map.entry("literal", "литерал"),
+                Map.entry("literal", "буквальный"),
                 Map.entry("locale", "локаль"),
                 Map.entry("locking", "блокировка"),
                 Map.entry("lookup", "поиск"),
-                Map.entry("marshal", "маршалинг"),
-                Map.entry("modular", "модульный"),  // Новое слово
+                Map.entry("marshal", "выстраивать"),
+                Map.entry("modular", "модульный"),
                 Map.entry("modifier", "модификатор"),
                 Map.entry("mount", "монтировать")
         ));
@@ -543,7 +539,7 @@ public class VocabularyService {
                 Map.entry("operand", "операнд"),
                 Map.entry("overhead", "накладные расходы"),
                 Map.entry("padding", "заполнение"),
-                Map.entry("parsing", "разбор"),  // Новое слово
+                Map.entry("parsing", "разбор"),
                 Map.entry("persistence", "сохранение"),
                 Map.entry("pixel", "пиксель"),
                 Map.entry("placeholder", "заместитель"),
@@ -578,7 +574,7 @@ public class VocabularyService {
                 Map.entry("string", "строка"),
                 Map.entry("structure", "структура"),
                 Map.entry("subsystem", "подсистема"),
-                Map.entry("surrogate", "суррогат"),
+                Map.entry("surrogate", "заменитель"),
                 Map.entry("synchronized", "синхронизированный"),  // Новое слово
                 Map.entry("syntax", "синтаксис"),
                 Map.entry("system", "система")
@@ -641,7 +637,7 @@ public class VocabularyService {
                 .orElse(null);
     }
 
-    public List<String> generateOptions(long chatId,String word) {
+    public List<String> generateOptions(long chatId, String word) {
         List<String> values = new ArrayList<>(getUserCurrentVocabulary(chatId).values());
         String correctAnswer = getUserCurrentVocabulary(chatId).get(word);
         values.remove(correctAnswer);
@@ -671,5 +667,45 @@ public class VocabularyService {
     public int getCounter(long chatId) {
         return getUserSession(chatId).getCounter();
     }
+
+//    public String getNextInvertWordToCheck(long chatId) {
+//        Map<String, String> currentVocabulary = getUserCurrentVocabulary(chatId).entrySet().stream()
+//                .collect(Collectors.toMap(
+//                        Map.Entry::getValue,
+//                        Map.Entry::getKey,
+//                        (existing, replacement) -> existing
+//                ));
+//        if (currentVocabulary == null) {
+//            throw new IllegalStateException("Словарь не выбран или не установлен для пользователя.");
+//        }
+//        UserSession session = getUserSession(chatId);
+//        return currentVocabulary.keySet().stream()
+//                .filter(word -> !session.getCheckedWords().contains(word))
+//                .findFirst()
+//                .orElse(null);
+//
+//    }
+//
+//    public List<String> generateInvertOptions(long chatId, String word) {
+//        Map<String, String> invertCurrentVocabulary = new HashMap<>(getUserCurrentVocabulary(chatId).entrySet().stream()
+//                .collect(Collectors.toMap(
+//                        Map.Entry::getValue,
+//                        Map.Entry::getKey,
+//                        (existing, replacement) -> existing
+//                )));
+//        List<String> values = new ArrayList<>(invertCurrentVocabulary.values());
+//        String correctAnswer = getUserCurrentVocabulary(chatId).get(word);
+//        values.remove(correctAnswer);
+//        Collections.shuffle(values);
+//
+//        List<String> options = new ArrayList<>();
+//        options.add(correctAnswer);
+//        options.add(values.get(0));
+//        options.add(values.get(1));
+//        Collections.shuffle(options);
+//
+//        return options;
+//    }
+
 }
 

@@ -51,7 +51,7 @@ public class VocabularyBot {
 
         if (vocabularyService.getDictionaries().containsKey(data)) {
             vocabularyService.selectDictionary(data, chatId);
-            sendMessage(chatId, "Вы выбрали словарь: " + data + ". Теперь вы можете начать тестирование с помощью /test.");
+            sendMessage(chatId, "Вы выбрали словарь: " + data + ". Теперь вы можете начать тестирование с помощью /test или инвертировать словарь /invert .");
             session.clearSessionFields();
         } else {
 
@@ -67,7 +67,7 @@ public class VocabularyBot {
             } else {
                 String correctAnswer = session.getCurrentVocabulary().get(currentWord);
                 sendMessage(chatId, "Неверно! Правильный ответ: *" + correctAnswer + "*");
-                session.getWrongAnswer().put(currentWord,correctAnswer);
+                session.getWrongAnswers().put(currentWord,correctAnswer);
             }
 
 
