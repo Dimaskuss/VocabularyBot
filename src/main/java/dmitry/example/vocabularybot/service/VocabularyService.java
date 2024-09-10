@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Service
 @Data
@@ -150,7 +149,7 @@ public class VocabularyService {
                 Map.entry("spacious", "просторный")
         ));
 
-        // Список 1: Описания человеческих состояний
+
         dictionaries.put("Состояния 1", Map.ofEntries(
                 Map.entry("happy", "счастливый"),
                 Map.entry("sad", "грустный"),
@@ -247,7 +246,7 @@ public class VocabularyService {
                 Map.entry("horrified", "ужаснутый"),
                 Map.entry("incredulous", "недоверчивый")
         ));
-        dictionaries.put("A-E edjIT", Map.ofEntries(
+        dictionaries.put("A-E edj IT", Map.ofEntries(
                 Map.entry("accessible", "доступный"),
                 Map.entry("accurate", "точный"),
                 Map.entry("active", "активный"),
@@ -287,7 +286,7 @@ public class VocabularyService {
                 Map.entry("distributed", "распределенный"),
                 Map.entry("dynamic", "динамичный")
         ));
-        dictionaries.put("E-I adjIT", Map.ofEntries(
+        dictionaries.put("E-I adj IT", Map.ofEntries(
                 Map.entry("efficient", "эффективный"),
                 Map.entry("emerging", "зарождающийся"),
                 Map.entry("empowered", "уполномоченный"),
@@ -334,7 +333,7 @@ public class VocabularyService {
                 Map.entry("intuitive", "интуитивный"),
                 Map.entry("invaluable", "бесценный")
         ));
-        dictionaries.put("K-O adjIT", Map.ofEntries(
+        dictionaries.put("K-O adj IT", Map.ofEntries(
                 Map.entry("key", "ключевой"),
                 Map.entry("large-scale", "крупномасштабный"),
                 Map.entry("leading", "ведущий"),
@@ -366,7 +365,7 @@ public class VocabularyService {
                 Map.entry("outstanding", "выдающийся"),
                 Map.entry("overarching", "всеобъемлющий")
         ));
-        dictionaries.put("P-R adjIT", Map.ofEntries(
+        dictionaries.put("P-R adj IT", Map.ofEntries(
                 Map.entry("parallel", "параллельный"),
                 Map.entry("participant-driven", "участие ориентированное"),
                 Map.entry("patient-centric", "ориентированный на пациента"),
@@ -555,27 +554,27 @@ public class VocabularyService {
                 Map.entry("refinement", "уточнение"),
                 Map.entry("reflection", "рефлексия"),
                 Map.entry("resource", "ресурс"),
-                Map.entry("responsive", "отзывчивый"),  // Новое слово
+                Map.entry("responsive", "отзывчивый"),
                 Map.entry("return", "возврат"),
                 Map.entry("rollback", "откат"),
-                Map.entry("robust", "прочный"),  // Новое слово
-                Map.entry("scalable", "масштабируемый"),  // Новое слово
+                Map.entry("robust", "прочный"),
+                Map.entry("scalable", "масштабируемый"),
                 Map.entry("scope", "область видимости"),
-                Map.entry("secure", "безопасный"),  // Новое слово
+                Map.entry("secure", "безопасный"),
                 Map.entry("sequence", "последовательность"),
                 Map.entry("shadowing", "затенение"),
                 Map.entry("shell", "оболочка"),
-                Map.entry("simple", "простой"),  // Новое слово
+                Map.entry("simple", "простой"),
                 Map.entry("snapshot", "снимок"),
                 Map.entry("spacing", "интервал"),
                 Map.entry("stacktrace", "трассировка стека"),
-                Map.entry("stable", "стабильный"),  // Новое слово
+                Map.entry("stable", "стабильный"),
                 Map.entry("state", "состояние"),
                 Map.entry("string", "строка"),
                 Map.entry("structure", "структура"),
                 Map.entry("subsystem", "подсистема"),
                 Map.entry("surrogate", "заменитель"),
-                Map.entry("synchronized", "синхронизированный"),  // Новое слово
+                Map.entry("synchronized", "синхронизированный"),
                 Map.entry("syntax", "синтаксис"),
                 Map.entry("system", "система")
         ));
@@ -587,7 +586,7 @@ public class VocabularyService {
                 Map.entry("typing", "типизация"),
                 Map.entry("unboxing", "распаковка"),
                 Map.entry("unicode", "Unicode"),
-                Map.entry("unique", "уникальный"),  // Новое слово
+                Map.entry("unique", "уникальный"),
                 Map.entry("unroll", "развертывание"),
                 Map.entry("validation", "валидация"),
                 Map.entry("variable", "переменная"),
@@ -668,44 +667,6 @@ public class VocabularyService {
         return getUserSession(chatId).getCounter();
     }
 
-//    public String getNextInvertWordToCheck(long chatId) {
-//        Map<String, String> currentVocabulary = getUserCurrentVocabulary(chatId).entrySet().stream()
-//                .collect(Collectors.toMap(
-//                        Map.Entry::getValue,
-//                        Map.Entry::getKey,
-//                        (existing, replacement) -> existing
-//                ));
-//        if (currentVocabulary == null) {
-//            throw new IllegalStateException("Словарь не выбран или не установлен для пользователя.");
-//        }
-//        UserSession session = getUserSession(chatId);
-//        return currentVocabulary.keySet().stream()
-//                .filter(word -> !session.getCheckedWords().contains(word))
-//                .findFirst()
-//                .orElse(null);
-//
-//    }
-//
-//    public List<String> generateInvertOptions(long chatId, String word) {
-//        Map<String, String> invertCurrentVocabulary = new HashMap<>(getUserCurrentVocabulary(chatId).entrySet().stream()
-//                .collect(Collectors.toMap(
-//                        Map.Entry::getValue,
-//                        Map.Entry::getKey,
-//                        (existing, replacement) -> existing
-//                )));
-//        List<String> values = new ArrayList<>(invertCurrentVocabulary.values());
-//        String correctAnswer = getUserCurrentVocabulary(chatId).get(word);
-//        values.remove(correctAnswer);
-//        Collections.shuffle(values);
-//
-//        List<String> options = new ArrayList<>();
-//        options.add(correctAnswer);
-//        options.add(values.get(0));
-//        options.add(values.get(1));
-//        Collections.shuffle(options);
-//
-//        return options;
-//    }
 
 }
 
