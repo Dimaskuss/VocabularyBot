@@ -13,6 +13,7 @@ public class StartCommand implements Command {
 
     @Override
     public void execute(long chatId, String text) {
-        vocabularyBot.sendMessage(chatId, "Привет дорогой друг мы здесь чтобы учить English words /test");
+        vocabularyBot.sendMessage(chatId, "_Привет дорогой друг мы здесь чтобы учить English words!!! _");
+        vocabularyBot.sendMessage(chatId, "* Нажми /select для выбора словаря *");
     }
 }

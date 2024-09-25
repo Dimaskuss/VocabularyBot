@@ -12,7 +12,7 @@ public class UserSession {
     private final Set<String> checkedWords = new HashSet<>();
     private String currentWord;
     private int counter;
-    private Map<String, String> currentVocabulary;
+    private Map<String, String> currentVocabulary = new HashMap<>();
     private final Map<String, String> wrongAnswers = new HashMap<>();
 
 
