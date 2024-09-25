@@ -20,7 +20,9 @@ import java.util.List;
 public class VocabularyBot {
 
     private final BotConfig botConfig;
+    private final CommandHandler commandHandler;
     private final VocabularyService vocabularyService;
+
     private TelegramBot bot;
 
     @PostConstruct
@@ -30,9 +32,10 @@ public class VocabularyBot {
     }
 
     private int processUpdates(List<Update> updates) {
+
         for (Update update : updates) {
             if (update.message() != null && update.message().text() != null) {
-                handleTextMessage(update.message().chat().id(), update.message().text());
+                commandHandler.handleCommand(update.message().chat().id(), update.message().text());
             } else if (update.callbackQuery() != null) {
                 handleCallback(update.callbackQuery().maybeInaccessibleMessage().chat().id(), update.callbackQuery().data());
             }
@@ -40,48 +43,80 @@ public class VocabularyBot {
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    private void handleTextMessage(long chatId, String text) {
-        if ("/start".equals(text)) {
-            bot.execute(new SendMessage(chatId, "Привет дорогой друг мы здесь чтобы учить English words /test"));
-
-        } else if ("/test".equals(text)) {
-            sendNextQuestion(chatId);
-
-        } else if ("/clear".equals(text)) {
-            vocabularyService.clearCheckedWordsAndCounter();
-            bot.execute(new SendMessage(chatId, "Результаты теста сброшены воспользуйтесь /test для повторного прохождения !!"));
-        }
-    }
-
-    private void sendNextQuestion(long chatId) {
-        String word = vocabularyService.getNextWordToCheck();
-        if (word != null) {
-            vocabularyService.setCurrentWord(word);
-            List<String> options = vocabularyService.generateOptions(word);
-            InlineKeyboardMarkup markup = createInlineKeyboardMarkup(options);
-            bot.execute(new SendMessage(chatId, "*->  " +word.toUpperCase()+"  <-*" ).replyMarkup(markup).parseMode(ParseMode.Markdown));
-        } else {
-            bot.execute(new SendMessage(chatId, "_Вы проверили все слова /clear !_").parseMode(ParseMode.Markdown));
-        }
-    }
-
-    private InlineKeyboardMarkup createInlineKeyboardMarkup(List<String> options) {
-        InlineKeyboardButton[] buttons = options.stream()
-                .map(option -> new InlineKeyboardButton(option).callbackData(option))
-                .toArray(InlineKeyboardButton[]::new);
-        return new InlineKeyboardMarkup(buttons);
-    }
 
     private void handleCallback(long chatId, String data) {
-        String currentWord = vocabularyService.getCurrentWord();
-        if (vocabularyService.isCorrectAnswer(currentWord, data)) {
-            bot.execute(new SendMessage(chatId, "Верно "+vocabularyService.Increment(vocabularyService.getCounter())+" из "+vocabularyService.getVocabulary().size()));
-            vocabularyService.setCounter(vocabularyService.getCounter()+1);
+        UserSession session = vocabularyService.getUserSession(chatId);
+
+
+
+        if (vocabularyService.getDictionaries().containsKey(data)) {
+            vocabularyService.selectDictionary(data, chatId);
+            sendMessage(chatId, "Вы выбрали словарь: " + data + ". Теперь вы можете начать тестирование с помощью /test или инвертировать словарь /invert .");
+            session.clearSessionFields();
         } else {
-            String correctAnswer = vocabularyService.getVocabulary().get(currentWord);
-            bot.execute(new SendMessage(chatId, "Неверно! Правильный ответ: *" +correctAnswer+"*").parseMode(ParseMode.Markdown));
+
+            String currentWord = session.getCurrentWord();
+            if (currentWord == null) {
+                sendMessage(chatId, "Текущее слово не установлено. Пожалуйста, начните тест снова.");
+                return;
+            }
+            if (vocabularyService.isCorrectAnswer(chatId,currentWord, data)) {
+                vocabularyService.incrementCounter(chatId);
+                int totalWords = session.getCurrentVocabulary().size();
+                sendMessage(chatId, "Верно! " + vocabularyService.getCounter(chatId) + " из " + totalWords);
+            } else {
+                String correctAnswer = session.getCurrentVocabulary().get(currentWord);
+                sendMessage(chatId, "Неверно! Правильный ответ: *" + correctAnswer + "*");
+                session.getWrongAnswers().put(currentWord,correctAnswer);
+            }
+
+
+            vocabularyService.markWordAsChecked(chatId, currentWord);
+            commandHandler.handleCommand(chatId, "/test");
         }
-        vocabularyService.markWordAsChecked(currentWord);
-        sendNextQuestion(chatId);
+    }
+
+    public void sendMessage(long chatId, String text) {
+        bot.execute(new SendMessage(chatId, text).parseMode(ParseMode.Markdown));
+    }
+
+    public void sendMessageWithOptions(long chatId, String text, List<String> options) {
+        InlineKeyboardMarkup markup = createInlineKeyboardMarkup(options);
+        bot.execute(new SendMessage(chatId, text).replyMarkup(markup).parseMode(ParseMode.Markdown));
+    }
+    public void sendMessageWithVerticalOptions(long chatId, String text, List<String> options) {
+        InlineKeyboardMarkup markup = createVerticalInlineKeyboardMarkup(options);
+        bot.execute(new SendMessage(chatId, text).replyMarkup(markup).parseMode(ParseMode.Markdown));
+    }
+
+
+    private InlineKeyboardMarkup createInlineKeyboardMarkup(List<String> options) {
+        if (options == null || options.isEmpty()) {
+            throw new IllegalArgumentException("Options list cannot be null or empty");
+        }
+        InlineKeyboardButton[] buttons = options.stream()
+                .filter(option -> option != null && !option.trim().isEmpty())
+                .map(option -> new InlineKeyboardButton(option).callbackData(option))
+                .toArray(InlineKeyboardButton[]::new);
+        if (buttons.length == 0) {
+            throw new IllegalStateException("No valid options provided to create buttons");
+        }
+        return new InlineKeyboardMarkup(buttons);
+    }
+    private InlineKeyboardMarkup createVerticalInlineKeyboardMarkup(List<String> options) {
+        if (options == null || options.isEmpty()) {
+            throw new IllegalArgumentException("Options list cannot be null or empty");
+        }
+
+        InlineKeyboardButton[][] buttons = options.stream()
+                .filter(option -> option != null && !option.trim().isEmpty())
+                .map(option -> new InlineKeyboardButton[]{new InlineKeyboardButton(option).callbackData(option)})
+                .toArray(InlineKeyboardButton[][]::new);
+
+        if (buttons.length == 0) {
+            throw new IllegalStateException("No valid options provided to create buttons");
+        }
+
+        return new InlineKeyboardMarkup(buttons);
     }
 }
